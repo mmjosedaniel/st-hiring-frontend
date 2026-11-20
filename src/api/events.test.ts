@@ -1,18 +1,13 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { fetchEvents } from "./events";
+import { jazzEvent } from "../test/fixtures/events";
 
 describe("fetchEvents", () => {
     afterEach(() => {
         vi.unstubAllGlobals()
     })
     it("should request page 2 and respond the correct fields", async () => {
-        const expectedEvent = {
-            id: 1,
-            name: 'jazz concert',
-            date: '2026-12-05T19:00:00-05:00',
-            location: 'Teatro Municipal',
-            description: 'live concert of Jazz.',
-        };
+        const expectedEvent = jazzEvent;
 
         const eventMock = {
             ...expectedEvent,
@@ -34,7 +29,7 @@ describe("fetchEvents", () => {
         expect(result).toEqual([expectedEvent]);
     })
 
-    it("should throw an error when the API responds with Status Code 500", () => {
+    it("should throw an error when the API responds with Status Code 500", async () => {
         const fetchMock = vi.fn().mockResolvedValue({
             ok: false,
             status: 500
@@ -42,7 +37,7 @@ describe("fetchEvents", () => {
 
         vi.stubGlobal('fetch', fetchMock);
 
-        expect(fetchEvents(2, 5)).rejects.toThrow(
+        await expect(fetchEvents(2, 5)).rejects.toThrow(
             "Could not load events. Status: 500"
         )
 
