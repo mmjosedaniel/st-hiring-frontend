@@ -7,7 +7,7 @@ interface Pagination {
     pageSize: number;
 }
 
-interface EventState extends Pagination {
+export interface EventState extends Pagination {
     items: EventItem[];
 }
 
