@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store"
 import { useEffect } from "react";
 import { loadEvents } from "../api/features/events/eventsSlice";
-import { TableContainer, TableHead, TableRow, TableCell, TableBody, Table } from "@mui/material";
+import { TableContainer, TableHead, TableRow, TableCell, TableBody, Table, TablePagination } from "@mui/material";
 
 const dateFormat = new Intl.DateTimeFormat('en-US', {
   dateStyle: 'medium',
@@ -12,7 +12,7 @@ const dateFormat = new Intl.DateTimeFormat('en-US', {
 
 const EventsListTable = () => {
     const dispatch = useDispatch<AppDispatch>();
-    const events = useSelector((state: RootState) => state.events.items)
+    const {items: events, page, pageSize, total} = useSelector((state: RootState) => state.events)
 
     useEffect(() => {
         dispatch(loadEvents({ page: 1, pageSize: 10 }))
@@ -45,6 +45,17 @@ const EventsListTable = () => {
                     ))}
                 </TableBody>
             </Table>
+            <TablePagination 
+                component="div"
+                count={total}
+                page={page - 1}
+                rowsPerPage={pageSize}
+                rowsPerPageOptions={[pageSize]}
+                labelDisplayedRows={() => `Page ${page}`}
+                onPageChange={(_event, newPage) => {
+                    dispatch(loadEvents({ page: newPage + 1, pageSize }));
+                }}
+            />
         </TableContainer>
     )
 }

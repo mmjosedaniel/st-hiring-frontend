@@ -6,7 +6,7 @@ describe("fetchEvents", () => {
     afterEach(() => {
         vi.unstubAllGlobals()
     })
-    it("should request page 2 and respond the correct fields", async () => {
+    it("should return the requested page of events and the total count", async () => {
         const expectedEvent = jazzEvent;
 
         const eventMock = {
@@ -18,7 +18,10 @@ describe("fetchEvents", () => {
 
         const fetchMock = vi.fn().mockResolvedValue({
             ok: true,
-            json: async () => [eventMock]
+            json: async () => ({
+                items: [eventMock],
+                total: 6
+            })
         })
 
         vi.stubGlobal('fetch', fetchMock);
@@ -26,7 +29,10 @@ describe("fetchEvents", () => {
         const result = await fetchEvents(2, 5);
 
         expect(fetchMock).toHaveBeenCalledWith('/events?page=2&pageSize=5');
-        expect(result).toEqual([expectedEvent]);
+        expect(result).toEqual({
+            items: [expectedEvent],
+            total: 6
+        });
     })
 
     it("should throw an error when the API responds with Status Code 500", async () => {

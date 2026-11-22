@@ -1,6 +1,5 @@
-import { Pagination } from "@mui/material";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { EventItem, fetchEvents } from "../../events";
+import { EventItem, EventsPage, fetchEvents } from "../../events";
 
 interface Pagination {
     page: number;
@@ -9,16 +8,18 @@ interface Pagination {
 
 export interface EventState extends Pagination {
     items: EventItem[];
+    total: number
 }
 
 const initialState: EventState = {
     items: [],
     page: 1,
-    pageSize: 10
+    pageSize: 10,
+    total: 0
 } 
 
 export const loadEvents = createAsyncThunk<
-  EventItem[],
+  EventsPage,
   Pagination,
   Record<string, never>
 >(
@@ -32,11 +33,13 @@ const eventsSlice = createSlice({
     reducers: {},
     extraReducers(builder) {
         builder.addCase(loadEvents.fulfilled, (state, action) =>{
+            const { items, total } = action.payload;
             const {page, pageSize} = action.meta.arg;
 
-            state.items = action.payload;
+            state.items = items;
             state.page = page;
             state.pageSize = pageSize
+            state.total = total;
         })
     }
 })

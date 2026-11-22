@@ -6,7 +6,12 @@ export interface EventItem {
     description: string;
 }
 
-export async function fetchEvents(page: number, pageSize: number): Promise<EventItem[]> {
+export interface EventsPage {
+    items: EventItem[];
+    total: number;
+}
+
+export async function fetchEvents(page: number, pageSize: number): Promise<EventsPage> {
     const params = new URLSearchParams({
         page: String(page),
         pageSize: String(pageSize)
@@ -18,9 +23,9 @@ export async function fetchEvents(page: number, pageSize: number): Promise<Event
         throw new Error (`Could not load events. Status: ${response.status}`);
     }
 
-    const data: EventItem[] = await response.json();
+    const data: EventsPage = await response.json();
     
-    const events = data.map(({id, name, date, location, description}) => ({
+    const items = data.items.map(({id, name, date, location, description}) => ({
         id,
         name,
         date,
@@ -28,5 +33,5 @@ export async function fetchEvents(page: number, pageSize: number): Promise<Event
         description
     })) 
 
-    return events;
+    return { items, total: data.total };
 }
