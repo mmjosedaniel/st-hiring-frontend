@@ -7,14 +7,27 @@ describe("fetchEvents", () => {
         vi.unstubAllGlobals()
     })
     it("should return the requested page of events and the total count", async () => {
-        const expectedEvent = jazzEvent;
-
         const eventMock = {
-            ...expectedEvent,
+            ...jazzEvent,
             created_at: '2026-11-01T15:00:00Z',
             updated_at: '2026-11-10T18:30:00Z',
-            availableTickets: [],
+            availableTickets: [
+                {
+                    id: 42,
+                    event_id: jazzEvent.id,
+                    type: 'general',
+                    status: 'available',
+                    price: 1000,
+                },
+            ],
         };
+
+        const expectedEvent = {
+            ...jazzEvent,
+            availableTickets: [
+                { id: 42, type: 'general', price: 1000 },
+        ],
+    };
 
         const fetchMock = vi.fn().mockResolvedValue({
             ok: true,

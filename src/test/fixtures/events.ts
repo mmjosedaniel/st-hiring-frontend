@@ -6,4 +6,5 @@ export const jazzEvent: EventItem = {
     date: '2026-12-05T19:00:00-05:00',
     location: 'Teatro Municipal',
     description: 'live concert of Jazz.',
+    availableTickets: []
 }

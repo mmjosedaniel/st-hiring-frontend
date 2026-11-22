@@ -1,8 +1,10 @@
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store"
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { loadEvents } from "../api/features/events/eventsSlice";
-import { TableContainer, TableHead, TableRow, TableCell, TableBody, Table, TablePagination } from "@mui/material";
+import { TableContainer, TableHead, TableRow, TableCell, TableBody, Table, TablePagination, Button } from "@mui/material";
+import { EventItem } from "../api/events";
+import EventTicketsDialogTable from "./EventTicketsDialogTable";
 
 const dateFormat = new Intl.DateTimeFormat('en-US', {
   dateStyle: 'medium',
@@ -13,6 +15,7 @@ const dateFormat = new Intl.DateTimeFormat('en-US', {
 const EventsListTable = () => {
     const dispatch = useDispatch<AppDispatch>();
     const {items: events, page, pageSize, total} = useSelector((state: RootState) => state.events)
+    const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
 
     useEffect(() => {
         dispatch(loadEvents({ page: 1, pageSize: 10 }))
@@ -27,6 +30,7 @@ const EventsListTable = () => {
                         <TableCell scope="col">Date</TableCell>
                         <TableCell scope="col">Location</TableCell>
                         <TableCell scope="col">Description</TableCell>
+                        <TableCell scope="col">available tickets</TableCell>
                     </TableRow>
                 </TableHead>
 
@@ -41,6 +45,17 @@ const EventsListTable = () => {
                             </TableCell>
                             <TableCell>{event.location ?? "Not defined"}</TableCell>
                             <TableCell >{event.description}</TableCell>
+                            <TableCell >
+                                {
+                                    event.availableTickets.length > 0 ? (
+                                        <Button onClick={() => setSelectedEvent(event)}>
+                                            Show Tickets ({event.availableTickets.length})
+                                        </Button>
+                                    ) : (
+                                        "No available tickets"
+                                    )
+                                }
+                            </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
@@ -56,6 +71,15 @@ const EventsListTable = () => {
                     dispatch(loadEvents({ page: newPage + 1, pageSize }));
                 }}
             />
+
+            {
+                selectedEvent && (
+                    <EventTicketsDialogTable
+                        event={selectedEvent}
+                        onClose={() => setSelectedEvent(null)}
+                    />
+                )
+            }
         </TableContainer>
     )
 }

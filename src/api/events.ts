@@ -1,9 +1,16 @@
+export interface TicketItem {
+    id: number;
+    type: string;
+    price: number;
+};
+
 export interface EventItem {
     id: number;
     name: string;
     date: string;
     location: string | null;
     description: string;
+    availableTickets: TicketItem[]
 }
 
 export interface EventsPage {
@@ -25,12 +32,17 @@ export async function fetchEvents(page: number, pageSize: number): Promise<Event
 
     const data: EventsPage = await response.json();
     
-    const items = data.items.map(({id, name, date, location, description}) => ({
-        id,
-        name,
-        date,
-        location,
-        description
+    const items = data.items.map((ticket) => ({
+        id: ticket.id,
+        name: ticket.name,
+        date: ticket.date,
+        location: ticket.location,
+        description: ticket.description,
+        availableTickets: ticket.availableTickets.map(ticket => ({
+            id: ticket.id,
+            type: ticket.type,
+            price: ticket.price
+        }))
     })) 
 
     return { items, total: data.total };

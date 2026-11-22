@@ -85,4 +85,74 @@ describe("EventsListTable", ()=> {
         expect(screen.getByRole("button", { name: "Go to next page" })).toBeDisabled();
         expect(screen.getAllByRole("rowheader")).toHaveLength(10);
     })
+
+    it("should show the available ticket count in the event row", async () => {
+        const event = {
+            ...jazzEvent,
+            availableTickets: [
+                { id: 42, type: 'general', price: 1000 },
+                { id: 43, type: 'general', price: 1000 },
+            ],
+        }
+
+        vi.mocked(fetchEvents).mockResolvedValueOnce({
+            items: [event],
+            total: 1,
+        });
+
+        render(
+            <Provider store={createAppStore()}>
+                <EventsListTable />
+            </Provider>
+        );
+
+        const row = await screen.findByRole('row', { name: /jazz concert/i });
+        const button = within(row).getByRole('button', { name: 'Show Tickets (2)' });
+
+        expect(button).toBeVisible();
+    })
+
+    it("should open a dialog with the tickets for the selected event", async () => {
+        const event = {
+            ...jazzEvent,
+            availableTickets: [
+                { id: 42, type: 'general', price: 1000 },
+                { id: 43, type: 'general', price: 1000 },
+            ],
+        }
+
+        const rockEvent = {
+            ...jazzEvent,
+            id: 2,
+            name: 'Rock concert',
+            availableTickets: [
+                { id: 99, type: 'general', price: 1500 },
+            ],
+        }
+
+        vi.mocked(fetchEvents).mockResolvedValueOnce({
+            items: [rockEvent, event],
+            total: 2,
+        });
+
+        render(
+            <Provider store={createAppStore()}>
+                <EventsListTable />
+            </Provider>
+        );
+
+        const jazzEventRow = await screen.findByRole('row', { name: /jazz concert/i });
+
+        fireEvent.click(
+            within(jazzEventRow).getByRole('button', { name: 'Show Tickets (2)' })
+        );
+
+        const dialog = await screen.findByRole('dialog', { name: /jazz concert/i });
+
+        const ticketTable = within(dialog).getByRole('table');
+
+        expect(within(ticketTable).getByText('42')).toBeVisible();
+        expect(within(ticketTable).getByText('43')).toBeVisible();
+        expect(within(ticketTable).queryByText('99')).not.toBeInTheDocument();
+    })
 })
