@@ -1,9 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import eventsReducer from "./api/features/events/eventsSlice";
+import settingReducer from "./api/features/settings/settingsSlice";
 
 export function createAppStore() {
     return configureStore({
-        reducer: { events: eventsReducer }
+        reducer: {
+            events: eventsReducer,
+            settings: settingReducer
+        }
     })
 }
 
