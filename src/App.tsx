@@ -1,5 +1,6 @@
 import { Container, Typography } from "@mui/material";
 import EventsListTable from "./components/EventsListTable";
+import SettingsForm from "./components/SettingsForm";
 
 function App() {
   return (
@@ -7,6 +8,8 @@ function App() {
       <Typography component="h1" variant="h4" gutterBottom>
         Events
       </Typography>
+
+      <SettingsForm/>
       <EventsListTable />
     </Container>
   );
