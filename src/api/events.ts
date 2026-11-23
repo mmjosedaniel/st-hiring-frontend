@@ -2,7 +2,7 @@ export interface TicketItem {
     id: number;
     type: string;
     price: number;
-};
+}
 
 export interface EventItem {
     id: number;

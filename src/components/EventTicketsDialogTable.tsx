@@ -30,7 +30,12 @@ const EventTicketsDialogTable = ({ event, onClose }: EventTicketsDialogTableProp
             <DialogContent>
                 <TableContainer>
                     <Table size="small" aria-label="Available tickets">
-                        <TableHead>
+                        <TableHead
+                            sx={{
+                                bgcolor: "#E8EEF3",
+                                "& th": { fontWeight: 700 },
+                            }}
+                        >
                             <TableRow>
                                 <TableCell scope="col">Ticket ID</TableCell>
                                 <TableCell scope="col">Type</TableCell>

@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store"
 import { useEffect, useState } from "react";
 import { loadEvents } from "../api/features/events/eventsSlice";
-import { TableContainer, TableHead, TableRow, TableCell, TableBody, Table, TablePagination, Button } from "@mui/material";
+import { TableContainer, TableHead, TableRow, TableCell, TableBody, Table, TablePagination, Button, Paper } from "@mui/material";
 import { EventItem } from "../api/events";
 import EventTicketsDialogTable from "./EventTicketsDialogTable";
 
@@ -28,14 +28,31 @@ const EventsListTable = () => {
     }, [dispatch, eventsPerPage])
 
     return(
-        <TableContainer>
+        <TableContainer
+            component={Paper}
+            variant="outlined"
+            sx={{
+                mt: 2,
+                bgcolor: "background.paper",
+                borderColor: "#D4DEE6"
+            }}
+        >
             <Table aria-label="Events Table">
-                <TableHead>
+                <TableHead
+                    sx={{
+                        bgcolor: "#E8EEF3",
+                        "& th": { fontWeight: 700 },
+                    }}
+                >
                     <TableRow>
                         <TableCell scope="col">Event</TableCell>
                         <TableCell scope="col">Date</TableCell>
                         <TableCell scope="col">Location</TableCell>
-                        <TableCell scope="col">Description</TableCell>
+                        <TableCell scope="col"
+                            sx={{ minWidth: { xs: "240px", sm: "auto" } }}
+                        >
+                                Description
+                        </TableCell>
                         <TableCell scope="col">available tickets</TableCell>
                     </TableRow>
                 </TableHead>
@@ -54,7 +71,12 @@ const EventsListTable = () => {
                             <TableCell >
                                 {
                                     event.availableTickets.length > 0 ? (
-                                        <Button onClick={() => setSelectedEvent(event)}>
+                                        <Button
+                                            size="small"
+                                            variant="outlined"
+                                            sx={{ whiteSpace: "nowrap", textTransform: "none" }}
+                                            onClick={() => setSelectedEvent(event)}
+                                        >
                                             Show Tickets ({event.availableTickets.length})
                                         </Button>
                                     ) : (

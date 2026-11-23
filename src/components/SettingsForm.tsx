@@ -37,7 +37,7 @@ const SettingsForm = () => {
                 const savedSettings = await dispatch(updateSettings(values)).unwrap();
                 resetForm({ values: savedSettings });
             } catch {
-                setStatus('Could not save settings. Please try again.');
+                setStatus("Could not save settings. Please try again.");
             }
         }
     })
@@ -46,7 +46,10 @@ const SettingsForm = () => {
     const timeZoneError = formik.touched.timeZone && formik.errors.timeZone;
 
     return(
-        <Accordion>
+        <Accordion
+            variant="outlined"
+            sx={{ borderColor: "#D4DEE6" }}
+        >
             <AccordionSummary
                 id="display-settings-heading"
                 aria-controls="display-settings-content"
@@ -58,7 +61,10 @@ const SettingsForm = () => {
             <AccordionDetails>
                 <form onSubmit={formik.handleSubmit}>
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-                        <FormControl fullWidth error={Boolean(pageSizeError)}>
+                        <FormControl
+                            size="small"
+                            fullWidth error={Boolean(pageSizeError)}
+                        >
                             <InputLabel id="events-per-page-label">Events per page</InputLabel>
                             <Select
                             labelId="events-per-page-label"
@@ -67,7 +73,7 @@ const SettingsForm = () => {
                             value={formik.values.eventsPerPage}
                             onBlur={formik.handleBlur}
                             onChange={(event) => {
-                                formik.setFieldValue('eventsPerPage', Number(event.target.value));
+                                formik.setFieldValue("eventsPerPage", Number(event.target.value));
                             }}
                             >
                                 <MenuItem value={10}>10</MenuItem>
@@ -78,7 +84,10 @@ const SettingsForm = () => {
                             {pageSizeError && <FormHelperText>{pageSizeError}</FormHelperText>}
                         </FormControl>
 
-                        <FormControl fullWidth>
+                        <FormControl
+                            size="small"
+                            fullWidth
+                        >
                             <InputLabel id="time-zone-label">Time zone</InputLabel>
                             <Select
                                 labelId="time-zone-label"
@@ -87,7 +96,7 @@ const SettingsForm = () => {
                                 value={formik.values.timeZone}
                                 onBlur={formik.handleBlur}
                                 onChange={(event) => {
-                                    formik.setFieldValue('timeZone', event.target.value);
+                                    formik.setFieldValue("timeZone", event.target.value);
                                 }}
                             >
                                 <MenuItem value="America/Bogota">Bogotá</MenuItem>
@@ -100,7 +109,7 @@ const SettingsForm = () => {
 
                     {formik.status && <Alert severity="error">{formik.status}</Alert>}
 
-                    <Stack direction="row" spacing={1} justifyContent="flex-end">
+                    <Stack direction="row" spacing={1} sx={{ mt: 2 }} justifyContent="flex-end">
                         <Button
                             type="button"
                             disabled={formik.isSubmitting}
