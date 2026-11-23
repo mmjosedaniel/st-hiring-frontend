@@ -5,16 +5,20 @@ import { Provider } from "react-redux";
 import { createAppStore } from "../store";
 import EventsListTable from "./EventsListTable";
 import { fireEvent, render, screen, within } from "@testing-library/react";
+import { fetchSettings } from "../api/settings";
+import { loadSettings } from "../api/features/settings/settingsSlice";
+
+vi.mock("../api/events", () => ({
+    fetchEvents: vi.fn(),
+}));
+
+vi.mock('../api/settings');
 
 beforeEach(() => {
     vi.mocked(fetchEvents).mockReset();
 });
 
 describe("EventsListTable", ()=> {
-    vi.mock("../api/events", () => ({
-        fetchEvents: vi.fn(),
-    }));
-
     it("should load the first page and show the events table", async () => {
         vi.mocked(fetchEvents).mockResolvedValueOnce({ items: [jazzEvent], total: 1});
 
@@ -33,6 +37,32 @@ describe("EventsListTable", ()=> {
         expect(cells.getByRole("cell", { name: /Dec 5, 2026.*7:00 PM/i })).toBeVisible();
         expect(cells.getByRole("cell", { name: "Teatro Municipal" })).toBeVisible();
         expect(cells.getByRole("cell", { name: jazzEvent.description })).toBeVisible();
+    })
+
+    it("should apply the saved page size and time zone", async () => {
+        vi.mocked(fetchSettings).mockResolvedValueOnce({
+            eventsPerPage: 25,
+            timeZone: "UTC"
+        });
+
+        vi.mocked(fetchEvents).mockResolvedValueOnce({
+            items: [jazzEvent],
+            total: 1
+        });
+
+        const store = createAppStore();
+        await store.dispatch(loadSettings()).unwrap();
+
+        render(
+            <Provider store={store}>
+            <EventsListTable />
+            </Provider>
+        );
+
+        const row = await screen.findByRole("row", { name: /jazz concert/i });
+
+        expect(fetchEvents).toHaveBeenNthCalledWith(1, 1, 25);
+        expect(within(row).getByRole("cell", { name: /Dec 6, 2026.*12:00 AM/i })).toBeVisible();
     })
 
     const firstPage = Array.from({length: 10}, (_, index) => ({

@@ -6,20 +6,26 @@ import { TableContainer, TableHead, TableRow, TableCell, TableBody, Table, Table
 import { EventItem } from "../api/events";
 import EventTicketsDialogTable from "./EventTicketsDialogTable";
 
-const dateFormat = new Intl.DateTimeFormat('en-US', {
-  dateStyle: 'medium',
-  timeStyle: 'short',
-  timeZone: 'America/Bogota',
-});
-
 const EventsListTable = () => {
     const dispatch = useDispatch<AppDispatch>();
     const {items: events, page, pageSize, total} = useSelector((state: RootState) => state.events)
     const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
 
+    const { eventsPerPage, timeZone } = useSelector(
+        (state: RootState) => state.settings
+    );
+
+    const dateFormat = new Intl.DateTimeFormat("en-US", {
+        dateStyle: "medium",
+        timeStyle: "short",
+        timeZone,
+    });
+
     useEffect(() => {
-        dispatch(loadEvents({ page: 1, pageSize: 10 }))
-    }, [dispatch])
+        const request = dispatch(loadEvents({page: 1, pageSize: eventsPerPage}))
+
+        return () => request.abort();
+    }, [dispatch, eventsPerPage])
 
     return(
         <TableContainer>
